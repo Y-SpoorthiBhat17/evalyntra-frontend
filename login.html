@@ -315,7 +315,7 @@
             }
 
             try {
-                const res = await fetch("http://evalyntra-backend.onrender.com/api/reset-password", {
+                const res = await fetch("https://evalyntra-backend.onrender.com/api/reset-password", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ email, newPassword: newPwd })
@@ -362,7 +362,7 @@
             }
 
             try {
-                const res = await fetch("http://evalyntra-backend.onrender.com/api/login", {
+                const res = await fetch("https://evalyntra-backend.onrender.com/api/login", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(payload)
