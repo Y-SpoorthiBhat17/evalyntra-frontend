@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Evalyntra</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 40px 20px;
+            background-color: #e5ecee;
+            color: #1a1a1a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .login-card {
+            width: 100%;
+            max-width: 400px;
+            background: #fff;
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .back-home {
+            text-decoration: none;
+            color: #5c4ce3;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 25px;
+            display: inline-block;
+        }
+        h1 {
+            font-size: 32px;
+            font-weight: 800;
+            margin: 0 0 10px 0;
+            color: #111827;
+        }
+        .subtitle {
+            font-size: 15px;
+            color: #4b5563;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 18px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #374151;
+        }
+        input, select {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 12px;
+            border: 1px solid #d1d5db;
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+            background-color: #fff;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #ebf0f1;
+        }
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+        }
+        .btn-login {
+            width: 100%;
+            background-color: #5c4ce3;
+            color: white;
+            padding: 16px;
+            border: none;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-login:hover { background-color: #4a3bbf; }
+        .hidden { display: none; }
+        .footer-links {
+            margin-top: 25px;
+            font-size: 14px;
+            color: #6b7280;
+        }
+        .footer-links a {
+            color: #5c4ce3;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        /* Forgot password link */
+        .forgot-link {
+            display: block;
+            text-align: right;
+            font-size: 13px;
+            color: #5c4ce3;
+            font-weight: 600;
+            text-decoration: none;
+            margin-top: -10px;
+            margin-bottom: 16px;
+            cursor: pointer;
+        }
+        .forgot-link:hover { text-decoration: underline; }
+
+        /* Forgot password panel */
+        #forgotPanel {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 14px;
+            padding: 20px;
+            margin-top: 16px;
+            text-align: left;
+        }
+        #forgotPanel h3 {
+            margin: 0 0 6px 0;
+            font-size: 16px;
+            color: #0369a1;
+        }
+        #forgotPanel p {
+            margin: 0 0 14px 0;
+            font-size: 13px;
+            color: #4b5563;
+        }
+        #forgotPanel input {
+            margin-bottom: 10px;
+        }
+        .btn-reset {
+            width: 100%;
+            background: #5c4ce3;
+            color: #fff;
+            border: none;
+            border-radius: 30px;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-reset:hover { background: #4a3bbf; }
+        .btn-cancel {
+            width: 100%;
+            background: transparent;
+            color: #6b7280;
+            border: 1px solid #d1d5db;
+            border-radius: 30px;
+            padding: 10px;
+            font-size: 13px;
+            cursor: pointer;
+            margin-top: 8px;
+            font-family: 'Inter', sans-serif;
+        }
+        .success-msg {
+            color: #16a34a;
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 8px;
+            display: none;
+        }
+        .error-msg {
+            color: #dc2626;
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 8px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <a href="index.html" class="back-home">← Back to Home</a>
+        <h1>Welcome Back</h1>
+        <p class="subtitle">Select your role and enter your credentials</p>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label>Login As</label>
+                <select id="loginRole" onchange="toggleLoginFields()" required>
+                    <option value="" disabled selected>Select your role</option>
+                    <option value="student">Student</option>
+                    <option value="lecturer">Lecturer</option>
+                </select>
+            </div>
+
+            <!-- Student: USN only -->
+            <div id="studentLogin" class="hidden">
+                <div class="form-group">
+                    <label>USN (University Serial Number)</label>
+                    <input type="text" id="studentUSN" placeholder="e.g. 1RV23CS001" maxlength="10">
+                </div>
+            </div>
+
+            <!-- Lecturer: Password only -->
+            <div id="lecturerLogin" class="hidden">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="lecturerName" placeholder="Enter your registered name">
+                </div>
+                <div class="form-group">
+                    <label>Subject Code</label>
+                    <input type="text" id="lecturerSubjectCode" placeholder="e.g. BCS401" style="text-transform:uppercase">
+                </div>
+                <div class="form-group">
+                    <label>Email Id</label>
+                    <input type="email" id="lecturerEmail" placeholder="Enter your Gmail">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="lecturerPassword" placeholder="Enter your password">
+                </div>
+                <a class="forgot-link" onclick="toggleForgotPanel()">Forgot Password?</a>
+
+                <!-- Forgot Password Panel -->
+                <div id="forgotPanel" class="hidden">
+                    <h3>🔑 Reset Password</h3>
+                    <p>Enter your registered name and a new password below.</p>
+                    <div class="form-group">
+                        <label>Email Id</label>
+                        <input type="email" id="resetEmail" placeholder="Enter your registered email">
+                    </div>
+                    <div class="form-group">
+                        <label>New Password</label>
+                        <input type="password" id="newPassword" placeholder="Enter new password">
+                    </div>
+                    <div class="form-group">
+                        <label>Confirm New Password</label>
+                        <input type="password" id="confirmPassword" placeholder="Re-enter new password">
+                    </div>
+                    <button type="button" class="btn-reset" onclick="resetPassword()">Reset Password</button>
+                    <button type="button" class="btn-cancel" onclick="toggleForgotPanel()">Cancel</button>
+                    <p class="success-msg" id="resetSuccess">✅ Password reset successful! You can now log in.</p>
+                    <p class="error-msg" id="resetError"></p>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-login hidden" id="loginBtn">Login</button>
+        </form>
+
+        <div class="footer-links">
+            Don't have an account? <a href="register.html">Register here</a>
+        </div>
+    </div>
+
+    <script>
+        function toggleLoginFields() {
+            const role = document.getElementById('loginRole').value;
+            document.getElementById('studentLogin').classList.add('hidden');
+            document.getElementById('lecturerLogin').classList.add('hidden');
+            document.getElementById('loginBtn').classList.remove('hidden');
+            document.getElementById('forgotPanel').classList.add('hidden');
+
+            if (role === 'student') {
+                document.getElementById('studentLogin').classList.remove('hidden');
+            } else if (role === 'lecturer') {
+                document.getElementById('lecturerLogin').classList.remove('hidden');
+            }
+        }
+
+        function toggleForgotPanel() {
+            const panel = document.getElementById('forgotPanel');
+            const isHidden = panel.classList.contains('hidden');
+            panel.classList.toggle('hidden');
+            document.getElementById('resetSuccess').style.display = 'none';
+            document.getElementById('resetError').style.display = 'none';
+            document.getElementById('resetEmail').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+            if (isHidden) {
+                setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+            } else {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        async function resetPassword() {
+            const email = document.getElementById('resetEmail').value.trim();
+            const newPwd = document.getElementById('newPassword').value;
+            const confirmPwd = document.getElementById('confirmPassword').value;
+            const successEl = document.getElementById('resetSuccess');
+            const errorEl = document.getElementById('resetError');
+
+            successEl.style.display = 'none';
+            errorEl.style.display = 'none';
+
+            if (!email || !newPwd || !confirmPwd) {
+                errorEl.textContent = '⚠️ Please fill in all fields.';
+                errorEl.style.display = 'block';
+                return;
+            }
+            if (newPwd !== confirmPwd) {
+                errorEl.textContent = '⚠️ Passwords do not match.';
+                errorEl.style.display = 'block';
+                return;
+            }
+            if (newPwd.length < 6) {
+                errorEl.textContent = '⚠️ Password must be at least 6 characters.';
+                errorEl.style.display = 'block';
+                return;
+            }
+
+            try {
+                const res = await fetch("http://localhost:3000/api/reset-password", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, newPassword: newPwd })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    successEl.style.display = 'block';
+                    setTimeout(() => {
+                        document.getElementById('forgotPanel').classList.add('hidden');
+                        document.getElementById('resetEmail').value = '';
+                        document.getElementById('newPassword').value = '';
+                        document.getElementById('confirmPassword').value = '';
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }, 2000);
+                } else {
+                    errorEl.textContent = '⚠️ ' + (data.message || 'Name not found. Please check and try again.');
+                    errorEl.style.display = 'block';
+                }
+            } catch (err) {
+                errorEl.textContent = '⚠️ Server not reachable. Please try again later.';
+                errorEl.style.display = 'block';
+            }
+        }
+
+        document.getElementById("loginForm").addEventListener("submit", async function (e) {
+            e.preventDefault();
+            const role = document.getElementById("loginRole").value;
+            let payload = { role };
+
+            if (role === "student") {
+                payload.usn = document.getElementById("studentUSN").value.trim().toUpperCase();
+                if (!payload.usn) { alert("Please enter your USN."); return; }
+            }
+            if (role === "lecturer") {
+                payload.email = document.getElementById("lecturerEmail").value.trim();
+                payload.name = document.getElementById("lecturerName").value.trim();
+                payload.subjectCode = document.getElementById("lecturerSubjectCode").value.trim().toUpperCase();
+                payload.password = document.getElementById("lecturerPassword").value;
+
+                if (!payload.email || !payload.name || !payload.subjectCode || !payload.password) {
+                    alert("Please enter name, email, subject code and password.");
+                return;
+                }
+            }
+
+            try {
+                const res = await fetch("http://localhost:3000/api/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (!res.ok) { alert(data.message); return; }
+
+                localStorage.setItem("loggedInRole", data.role);
+                localStorage.setItem("loggedInUser", JSON.stringify(data.user));
+                localStorage.setItem("loggedInGroup", data.groupKey);
+
+                alert("Login successful!");
+                if (data.role === "student") {
+                    window.location.href = "student-dashboard.html";
+                } else {
+                    window.location.href = "lecture-dashboard.html";
+                }
+            } catch (err) {
+                alert("Server not running. Please start your backend.");
+            }
+        });
+    </script>
+</body>
+</html>

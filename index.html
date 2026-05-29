@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evalyntra — Learn Together, Grow Together</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; color: #1a1a1a; background: #fff; }
+
+        /* NAV */
+        nav {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 16px 40px; border-bottom: 1px solid #f1f5f9; position: sticky; top: 0; background: #fff; z-index: 100;
+        }
+        .nav-logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 20px; color: #5c4ce3; }
+        .nav-logo span { font-size: 22px; }
+        .nav-links { display: flex; align-items: center; gap: 28px; font-size: 14px; font-weight: 500; color: #4b5563; }
+        .nav-links a { text-decoration: none; color: inherit; transition: color 0.2s; }
+        .nav-links a:hover { color: #5c4ce3; }
+        .nav-cta { background: #5c4ce3; color: #fff !important; padding: 9px 20px; border-radius: 20px; font-weight: 600 !important; }
+        .nav-cta:hover { background: #4a3bbf !important; color: #fff !important; }
+
+        /* HERO */
+        .hero {
+            display: flex; flex-direction: column; align-items: center; text-align: center;
+            padding: 80px 20px 60px;
+        }
+        .badge {
+            background: #ede9fe; color: #5c4ce3; padding: 7px 18px; border-radius: 20px;
+            font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 28px;
+        }
+        .hero-title { font-size: 52px; font-weight: 800; line-height: 1.1; letter-spacing: -1.5px; margin-bottom: 20px; }
+        .hero-title .accent { color: #5c4ce3; }
+        .hero-sub { font-size: 17px; color: #6b7280; max-width: 560px; line-height: 1.7; margin-bottom: 36px; }
+        .hero-btns { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+        .btn-primary { background: #5c4ce3; color: #fff; padding: 15px 32px; border-radius: 30px; text-decoration: none; font-weight: 700; font-size: 15px; transition: 0.2s; }
+        .btn-primary:hover { background: #4a3bbf; }
+        .btn-secondary { background: #fff; color: #1a1a1a; padding: 15px 32px; border-radius: 30px; text-decoration: none; font-weight: 600; font-size: 15px; border: 1.5px solid #e5e7eb; transition: 0.2s; }
+        .btn-secondary:hover { border-color: #5c4ce3; color: #5c4ce3; }
+
+        /* STATS */
+        .stats-bar {
+            display: flex; justify-content: center; gap: 60px; flex-wrap: wrap;
+            padding: 32px 20px; background: #f9fafb; border-top: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9;
+        }
+        .stat { text-align: center; }
+        .stat-num { font-size: 28px; font-weight: 800; color: #5c4ce3; }
+        .stat-label { font-size: 13px; color: #6b7280; margin-top: 4px; }
+
+        /* SECTION */
+        .section { padding: 80px 20px; max-width: 1100px; margin: 0 auto; }
+        .section-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #5c4ce3; margin-bottom: 12px; }
+        .section-title { font-size: 34px; font-weight: 800; letter-spacing: -0.8px; margin-bottom: 14px; color: #111827; }
+        .section-sub { font-size: 16px; color: #6b7280; line-height: 1.6; margin-bottom: 48px; max-width: 540px; }
+
+        /* FEATURES */
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+        .feature-card {
+            background: #fff; border: 1.5px solid #f1f5f9; border-radius: 20px;
+            padding: 28px; transition: 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        }
+        .feature-card:hover { border-color: #5c4ce3; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(92,76,227,0.1); }
+        .icon-box { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; margin-bottom: 18px; }
+        .icon-purple { background: #ede9fe; }
+        .icon-blue { background: #dbeafe; }
+        .icon-green { background: #dcfce7; }
+        .icon-orange { background: #ffedd5; }
+        .icon-pink { background: #fce7f3; }
+        .feature-card h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; color: #111827; }
+        .feature-card p { font-size: 14px; color: #6b7280; line-height: 1.6; }
+
+        /* COURSES SECTION */
+        .courses-section { background: #f9fafb; padding: 80px 20px; }
+        .courses-inner { max-width: 1100px; margin: 0 auto; }
+        .courses-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; margin-top: 48px; }
+        .course-card {
+            background: #fff; border-radius: 20px; overflow: hidden;
+            border: 1.5px solid #f1f5f9; box-shadow: 0 2px 8px rgba(0,0,0,0.04); transition: 0.2s;
+        }
+        .course-card:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(92,76,227,0.12); border-color: #c4b5fd; }
+        .course-thumb {
+            height: 120px; display: flex; align-items: center; justify-content: center;
+            font-size: 48px; position: relative;
+        }
+        .thumb-dsa { background: linear-gradient(135deg, #5c4ce3, #8b5cf6); }
+        .thumb-js { background: linear-gradient(135deg, #f59e0b, #fcd34d); }
+        .thumb-react { background: linear-gradient(135deg, #0ea5e9, #38bdf8); }
+        .thumb-python { background: linear-gradient(135deg, #10b981, #6ee7b7); }
+        .course-badge {
+            position: absolute; top: 12px; right: 12px;
+            padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;
+        }
+        .badge-free { background: #dcfce7; color: #16a34a; }
+        .badge-free { background: #fff; color: #5c4ce3; }
+        .course-body { padding: 20px; }
+        .course-body h4 { font-size: 16px; font-weight: 700; margin-bottom: 6px; color: #111827; }
+        .course-body p { font-size: 13px; color: #6b7280; margin-bottom: 14px; line-height: 1.5; }
+        .course-meta { display: flex; align-items: center; justify-content: space-between; }
+        .lesson-count { font-size: 12px; color: #9ca3af; }
+        .course-price { font-size: 15px; font-weight: 700; color: #5c4ce3; }
+        .enroll-btn {
+            display: block; text-align: center; width: 100%; margin-top: 14px;
+            background: #5c4ce3; color: #fff; padding: 10px; border-radius: 12px;
+            text-decoration: none; font-size: 14px; font-weight: 600; transition: 0.2s;
+        }
+        .enroll-btn:hover { background: #4a3bbf; }
+
+        /* RESUME SECTION */
+        .resume-section { padding: 80px 20px; max-width: 900px; margin: 0 auto; }
+        .resume-card {
+            background: linear-gradient(135deg, #5c4ce3 0%, #7c3aed 100%);
+            border-radius: 28px; padding: 48px; color: #fff; text-align: center;
+        }
+        .resume-card h2 { font-size: 32px; font-weight: 800; margin-bottom: 12px; }
+        .resume-card p { font-size: 16px; opacity: 0.85; margin-bottom: 28px; line-height: 1.6; }
+        .resume-features { display: flex; justify-content: center; gap: 32px; flex-wrap: wrap; margin-bottom: 32px; }
+        .resume-feat { text-align: center; }
+        .resume-feat .rf-icon { font-size: 28px; margin-bottom: 8px; }
+        .resume-feat p { font-size: 13px; opacity: 0.85; }
+        .btn-white { background: #fff; color: #5c4ce3; padding: 14px 32px; border-radius: 30px; text-decoration: none; font-weight: 700; font-size: 15px; display: inline-block; }
+        .btn-white:hover { background: #f5f3ff; }
+
+        /* CHATBOT */
+        .chat-section { background: #f9fafb; padding: 80px 20px; }
+        .chat-inner { max-width: 480px; margin: 0 auto; }
+        #chat-wrap {
+            background: #fff; border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+            overflow: hidden; display: flex; flex-direction: column; height: 520px;
+        }
+        #chat-header { background: #5c4ce3; color: #fff; padding: 16px 18px; display: flex; align-items: center; gap: 10px; }
+        .ch-avatar { width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 16px; }
+        .ch-info p { margin: 0; font-size: 14px; font-weight: 700; }
+        .ch-info span { font-size: 11px; opacity: 0.8; }
+        #chat-messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 10px; background: #f3f4f6; }
+        .bubble-row { display: flex; align-items: flex-end; gap: 8px; }
+        .bubble-row.user { flex-direction: row-reverse; }
+        .bubble { max-width: 80%; padding: 10px 14px; border-radius: 16px; font-size: 14px; line-height: 1.6; }
+        .bubble.bot { background: #fff; color: #111827; border: 1px solid #e5e7eb; border-bottom-left-radius: 4px; }
+        .bubble.user { background: #5c4ce3; color: #fff; border-bottom-right-radius: 4px; }
+        .bot-av { width: 28px; height: 28px; border-radius: 50%; background: #5c4ce3; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
+        .quick-btns { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; padding-left: 36px; }
+        .qbtn { padding: 7px 13px; border-radius: 20px; border: 1.5px solid #5c4ce3; color: #5c4ce3; background: transparent; font-size: 12px; cursor: pointer; font-family: 'Inter', sans-serif; transition: 0.15s; }
+        .qbtn:hover { background: #5c4ce3; color: #fff; }
+        #chat-input-row { display: flex; gap: 8px; padding: 12px 14px; border-top: 1px solid #e5e7eb; background: #fff; }
+        #chat-input { flex: 1; border: 1px solid #d1d5db; border-radius: 20px; padding: 9px 14px; font-size: 14px; font-family: 'Inter', sans-serif; outline: none; }
+        #chat-input:focus { border-color: #5c4ce3; }
+        #chat-send { width: 38px; height: 38px; border-radius: 50%; background: #5c4ce3; border: none; color: #fff; cursor: pointer; font-size: 16px; flex-shrink: 0; }
+        #chat-send:hover { background: #4a3bbf; }
+        @keyframes blink { 0%,80%,100%{opacity:0.3} 40%{opacity:1} }
+        .dot { width: 7px; height: 7px; border-radius: 50%; background: #9ca3af; display: inline-block; animation: blink 1.2s infinite; margin: 0 1px; }
+        .dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}
+        a.link-btn { display: inline-block; margin-top: 8px; padding: 8px 16px; background: #5c4ce3; color: #fff; border-radius: 20px; text-decoration: none; font-size: 13px; font-weight: 600; }
+
+        /* FOOTER */
+        footer { background: #030712; color: #6b7280; padding: 40px 20px; text-align: center; font-size: 13px; }
+        footer span { color: #5c4ce3; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+    <div class="nav-logo"><span>🎓</span> Evalyntra</div>
+    <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#mock">Mock Interview</a>
+        <a href="#chatbot" onclick="document.getElementById('chat-wrap').scrollIntoView({behavior:'smooth'});return false;">Help</a>
+        <a href="login.html" class="nav-cta">Login →</a>
+    </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+    <div class="badge">🚀 Karnataka's #1 Student Platform</div>
+    <h1 class="hero-title">Learn Together,<br><span class="accent">Grow Together</span></h1>
+    <p class="hero-sub">A modern platform connecting lecturers and students across Karnataka's engineering colleges. Notes, Video, Assignments, Quizzes, 15+ free skill courses, Resume analyzer & Mock interview prep — all in one place.</p>
+    <div class="hero-btns" style="flex-direction:column; align-items:center;">
+
+    <a href="register.html" class="btn-primary">
+        Get Started — It's Free →
+    </a><br>
+    <img src="group-discussion.jpg"
+         alt="Group Discussion"
+         style="width:100%; max-width:700px; margin-bottom:20px; border-radius:25px;">
+</div>
+</div>
+
+<!-- STATS -->
+<div class="stats-bar">
+    <div class="stat"><div class="stat-num">500+</div><div class="stat-label">Students</div></div>
+    <div class="stat"><div class="stat-num">18+</div><div class="stat-label">Colleges</div></div>
+    <div class="stat"><div class="stat-num">15+</div><div class="stat-label">Free Courses</div></div>
+    <div class="stat"><div class="stat-num">150+</div><div class="stat-label">Interview Questions</div></div>
+</div>
+
+<!-- FEATURES -->
+<div class="section" id="features">
+    <div class="section-label">Platform Features</div>
+    <h2 class="section-title">Everything You Need to Succeed</h2>
+    <p class="section-sub">Powerful tools for modern engineering education — built for both lecturers and students.</p>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="icon-box icon-purple">📖</div>
+            <h3>Notes & Resources</h3>
+            <p>Lecturers upload PDF notes grouped by college, department, year and section. Students download instantly.</p>
+        </div>
+        <div class="feature-card">
+            <div class="icon-box icon-blue">🎬</div>
+            <h3>Video Lectures</h3>
+            <p>Share YouTube video lectures directly in the platform. Students watch without leaving their dashboard.</p>
+        </div>
+        <div class="feature-card">
+            <div class="icon-box icon-orange">📋</div>
+            <h3>Assignments</h3>
+            <p>Create assignments with due dates. Students submit once — resubmit by replacing older submission automatically.</p>
+        </div>
+        <div class="feature-card">
+            <div class="icon-box icon-green">✅</div>
+            <h3>Smart Quizzes</h3>
+            <p>Timed MCQ quizzes with instant scoring. Generate questions with AI or create manually. Expires after deadline.</p>
+        </div>
+        <div class="feature-card">
+            <div class="icon-box icon-pink">📄</div>
+            <h3>Resume Analyzer</h3>
+            <p>Upload PDF resume, get keyword match score by job role & experience level. See missing skills + what to learn next.</p>
+        </div>
+        <div class="feature-card">
+            <div class="icon-box icon-purple">🎓</div>
+            <h3>Skill Courses</h3>
+            <p>15+ completely free skill courses — DSA, Web Dev, Python, ML, System Design and more. Earn certificates.</p>
+        </div>
+    </div>
+</div>
+
+<!-- MOCK INTERVIEW PROMO -->
+<div class="section" id="mock" style="padding-top:60px;padding-bottom:60px">
+    <div class="section-label">Interview Preparation</div>
+    <h2 class="section-title">Mock Interview & Aptitude</h2>
+    <p class="section-sub">Practice topic-wise questions, learn concepts, then take timed test. Available inside your student dashboard.</p>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:20px;max-width:1400px">
+        <div style="background:#f5f3ff;border-radius:18px;padding:24px;text-align:center;border:1.5px solid #ede9fe">
+            <div style="font-size:36px;margin-bottom:10px">🔢</div>
+            <h4 style="font-weight:700;margin-bottom:6px;color:#1e1b4b">Quantitative Aptitude</h4>
+            <p style="font-size:13px;color:#6b7280">Numbers, Percentages, Ratios, Time & Work, Profit & Loss</p>
+        </div>
+        <div style="background:#eff6ff;border-radius:18px;padding:24px;text-align:center;border:1.5px solid #dbeafe">
+            <div style="font-size:36px;margin-bottom:10px">🧠</div>
+            <h4 style="font-weight:700;margin-bottom:6px;color:#1e1b4b">Logical Reasoning</h4>
+            <p style="font-size:13px;color:#6b7280">Puzzles, Seating, Blood Relations, Syllogism, Coding-Decoding</p>
+        </div>
+        <div style="background:#f0fdf4;border-radius:18px;padding:24px;text-align:center;border:1.5px solid #dcfce7">
+            <div style="font-size:36px;margin-bottom:10px">💬</div>
+            <h4 style="font-weight:700;margin-bottom:6px;color:#1e1b4b">Verbal Ability</h4>
+            <p style="font-size:13px;color:#6b7280">Synonyms, Antonyms, Sentence Completion, Reading Comprehension</p>
+        </div>
+        <div style="background:#fff7ed;border-radius:18px;padding:24px;text-align:center;border:1.5px solid #fed7aa">
+            <div style="font-size:36px;margin-bottom:10px">💻</div>
+            <h4 style="font-weight:700;margin-bottom:6px;color:#1e1b4b">Technical / Coding</h4>
+            <p style="font-size:13px;color:#6b7280">C, Java, Python, Data Structures, OS, DBMS, Networks</p>
+        </div>
+        <div style="background:#fdf2f8;border-radius:18px;padding:24px;text-align:center;border:1.5px solid #f9a8d4">
+            <div style="font-size:36px;margin-bottom:10px">🧑‍💼</div>
+            <h4 style="font-weight:700;margin-bottom:6px;color:#1e1b4b">HR & Interview</h4>
+            <p style="font-size:13px;color:#6b7280">Tell Me About Yourself, Strengths & Weaknesses and other HR Questions</p>
+        </div>
+    </div>
+    <div style="margin-top:28px"><a href="login.html" style="background:#5c4ce3;color:#fff;padding:14px 32px;border-radius:30px;text-decoration:none;font-weight:700;font-size:15px">Start Practicing →</a></div>
+</div>
+
+<!-- CHATBOT -->
+<div class="chat-section" id="chatbot">
+    <div class="section" style="text-align:center;padding-bottom:24px">
+        <div class="section-label">Support</div>
+        <h2 class="section-title">Need Help?</h2>
+        <p class="section-sub" style="margin:0 auto">Your smart assistant to guide you through Evalyntra</p>
+    </div>
+    <div class="chat-inner">
+        <div id="chat-wrap">
+            <div id="chat-header">
+                <div class="ch-avatar">🎓</div>
+                <div class="ch-info">
+                    <p>Evalyntra Assistant</p>
+                    <span>Online — here to guide you</span>
+                </div>
+            </div>
+            <div id="chat-messages"></div>
+            <div id="chat-input-row">
+                <input id="chat-input" placeholder="Type your message..." autocomplete="off">
+                <button id="chat-send">&#10148;</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    © 2026 <span>Evalyntra</span> — Built for engineering students and lecturers across Karnataka.<br>
+    <small style="opacity:0.5;margin-top:6px;display:block">Your growth. Our mission.</small>
+</footer>
+
+<script>
+const msgs = document.getElementById('chat-messages');
+const input = document.getElementById('chat-input');
+const sendBtn = document.getElementById('chat-send');
+
+const FLOW = {
+    start: { bot: "Hello! Welcome to <strong>Evalyntra</strong> 👋<br>Have you already registered on the platform?", quick: ["Yes, I'm registered", "No, I'm new here"] },
+    ask_role: { bot: "Are you a <strong>Student</strong> or a <strong>Lecturer</strong>?", quick: ["I'm a Student", "I'm a Lecturer"] },
+    student_login: {
+        bot: `<strong>Student Login</strong><br><br>Enter your <strong>USN</strong> to access your dashboard.<br><br>Inside you'll find:<br>📚 <strong>My Class</strong> — notes, videos, assignments, quizzes<br>🎓 <strong>Courses</strong> — free courses<br>📝 <strong>Resume Analyzer</strong> — ATS score along with CV feedback<br>🎯 <strong>Mock Interview & Aptitude</strong> — Theory along with Mock Test`,
+        link: { text: "Go to Login →", href: "login.html" },
+        quick: ["I don't know my USN", "Content is missing", "Courses", "Resume analyzer","Mock Interview","Go back to start"]
+    },
+    lecturer_login: {
+        bot: `<strong>Lecturer Login</strong><br><br>Enter your <strong>Name</strong> +  <strong>Subject Code</strong> + <strong>Email Id</strong> + <strong>Password</strong>.<br><br>You can:<br>📝 Upload notes & videos<br>📋 Create assignments with view submission <br>✅ Build AI-powered quizzes<br>🏆 View Quiz result`,
+        link: { text: "Go to Login →", href: "login.html" },
+        quick: ["I forgot my password", "Go back to start"]
+    },
+    courses_info: {
+        bot: `<strong>15+ Courses on Evalyntra</strong><br><br>🆓 <strong>Free Courses:</strong><br>• JavaScript Mastery<br>• Python for Data Science<br>• DSA for Interviews<br>• React Fundamentals....<br><br>Complete a course → <strong>earn a certificate!</strong>`,
+        link: { text: "Explore Courses →", href: "login.html" },
+        quick: ["How to enroll?", "Go back to start"]
+    },
+    enroll_info: {
+        bot: `<strong>How to Enroll</strong><br><br>1. Login to your student dashboard<br>2. Click <strong>Courses</strong><br>3. Choose any course — all are free!<br>4. Enroll instantly<br>5. Complete all lessons → earn your certificate 🎓`,
+        quick: ["Go back to start"]
+    },
+    resume_info: {
+        bot: `<strong>Resume Analyzer</strong><br><br>Upload your <strong>PDF resume</strong> and select <strong>job role</strong> and <strong>experience</strong> from the dropdown.<br><br>You'll get:<br>📊 ATS score (0-100)<br>❌ Missing skills list<br>💡 Actionable improvements<br><br>Available on student dashboard!`,
+        link: { text: "Try Resume Analyzer →", href: "resume-analyzer.html" },
+        quick: ["Go back to start"]
+    },
+    dont_know_usn: {
+        bot: `Your <strong>USN</strong> is on your college ID card, admission letter, or marksheet.<br>Contact your college office or class coordinator.<br><br>Example: <code>4RV22CS111</code>`,
+        quick: ["Got my USN — go to login", "Go back to start"]
+    },
+    forgot_password: {
+        bot: `To reset your password, there is <strong>Forgot password</strong> button in login page click on it and reset your password.`,
+        link: { text: "Go to Login →", href: "login.html" },
+        quick: ["Go back to start"]
+    },
+    registered_no: {
+        bot: "Welcome! Registration is <strong>quick and free</strong>.<br><br>Students register with USN.<br>Lecturers register with Name, Subject Code, Email Id and Password.",
+        link: { text: "Get Started →", href: "register.html" },
+        quick: ["What can I do after registering?", "Go back to start"]
+    },
+    content_missing: {
+        bot: "If content are missing, that means your <strong>lecturer hasn't uploaded anything yet</strong>.<br><br>Wait for your lecturer to add content — it appears immediately once posted!",
+        quick: ["Go back to start"]
+    },
+    after_register: {
+        bot: "After registering:<br><br> Head to the login page and enter your credentials.",
+        quick: ["I'm a Student", "I'm a Lecturer"]
+    },
+    goto_login: {
+        bot: "Great! Head to the login page and enter your credentials.",
+        link: { text: "Go to Login →", href: "login.html" },
+        quick: ["Go back to start"]
+    },
+    mock_interview: {
+        bot: `<strong>Mock Interview & HR Preparation</strong><br><br>Practice aptitude, coding, HR and interview questions directly from your dashboard.<br><br>Topics covered:<br>📊 Quantitative Aptitude<br>🧠 Logical Reasoning<br>💬 Verbal Ability<br>💻 Technical / Coding<br>🧑‍💼 HR & Interview Questions`,
+        link: { text: "Start Mock Interview →", href: "login.html" },
+        quick: ["Go back to start"]
+    },
+    certificate_info: {
+        bot: `<strong>Certificates</strong><br><br>Complete ALL lessons in a course to earn your certificate.<br><br>The certificate will have:<br>✅ Your name<br>✅ Course name<br>✅ Completion date<br>✅ Certificate ID<br><br>Download it as PDF from the course page!`,
+        quick: ["Go back to start"]
+    },
+    fallback: { bot: "I'm here to help you navigate <strong>Evalyntra</strong>. What would you like to know?", quick: ["I'm a Student", "I'm a Lecturer"] }
+};
+
+function addBotBubble(text, link, quickReplies) {
+    const typing = document.createElement('div');
+    typing.className = 'bubble-row';
+    typing.innerHTML = `<div class="bot-av">🤖</div><div class="bubble bot"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>`;
+    msgs.appendChild(typing);
+    msgs.scrollTop = msgs.scrollHeight;
+    setTimeout(() => {
+        typing.remove();
+        const row = document.createElement('div');
+        row.className = 'bubble-row';
+        row.innerHTML = `<div class="bot-av">🤖</div>`;
+        const bub = document.createElement('div');
+        bub.className = 'bubble bot';
+        bub.innerHTML = text;
+        if (link) {
+            const a = document.createElement('a');
+            a.className = 'link-btn'; a.href = link.href; a.textContent = link.text;
+            bub.appendChild(document.createElement('br')); bub.appendChild(a);
+        }
+        row.appendChild(bub);
+        msgs.appendChild(row);
+        if (quickReplies && quickReplies.length) {
+            const qrow = document.createElement('div');
+            qrow.className = 'quick-btns';
+            quickReplies.forEach(label => {
+                const b = document.createElement('button');
+                b.className = 'qbtn'; b.textContent = label;
+                b.onclick = () => { handleUserMsg(label); qrow.remove(); };
+                qrow.appendChild(b);
+            });
+            msgs.appendChild(qrow);
+        }
+        msgs.scrollTop = msgs.scrollHeight;
+    }, 700);
+}
+
+function addUserBubble(text) {
+    const row = document.createElement('div');
+    row.className = 'bubble-row user';
+    row.innerHTML = `<div class="bubble user">${text}</div>`;
+    msgs.appendChild(row);
+    msgs.scrollTop = msgs.scrollHeight;
+}
+
+function handleUserMsg(text) {
+    addUserBubble(text);
+    const l = text.toLowerCase();
+    let key = 'fallback';
+    if (l.includes("don't know") && l.includes('usn')) key = 'dont_know_usn';
+    else if (l.includes('got my usn') || (l.includes('got') && l.includes('usn'))) key = 'goto_login';
+    else if (l.includes('forgot') || l.includes('password')) key = 'forgot_password';
+    else if (l.includes('yes') || (l.includes('registered') && !l.includes('no'))) key = 'ask_role';
+    else if ((l.includes('no') && !l.includes('notes') && !l.includes('content')) || l.includes('new here')) key = 'registered_no';
+    else if (l.includes('student')) key = 'student_login';
+    else if (l.includes('lecturer') || l.includes('teacher')) key = 'lecturer_login';
+    else if (l.includes('course')) key = 'courses_info';
+    else if (l.includes('enroll') || l.includes('how to')) key = 'enroll_info';
+    else if (l.includes('resume') || l.includes('cv') || l.includes('analyzer')) key = 'resume_info';
+    else if (l.includes('mock') || l.includes('interview') || l.includes('hr')) key = 'mock_interview';
+    else if (l.includes('certificate') || l.includes('cert')) key = 'certificate_info';
+    else if (l.includes('missing') || l.includes('no content') || l.includes('content')) key = 'content_missing';
+    else if (l.includes('after') || l.includes('what can')) key = 'after_register';
+    else if (l.includes('start') || l.includes('back')) key = 'start';
+    const flow = FLOW[key];
+    setTimeout(() => addBotBubble(flow.bot, flow.link || null, flow.quick || []), 100);
+}
+
+function sendMsg() {
+    const val = input.value.trim();
+    if (!val) return;
+    input.value = '';
+    handleUserMsg(val);
+}
+
+sendBtn.addEventListener('click', sendMsg);
+input.addEventListener('keydown', e => { if (e.key === 'Enter') sendMsg(); });
+setTimeout(() => addBotBubble(FLOW.start.bot, null, FLOW.start.quick), 400);
+</script>
+</body>
+</html>

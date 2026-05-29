@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lecture Dashboard — Evalyntra</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+*{box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#f8f9fc;color:#1e293b;}
+.tab-active{background-color:white!important;box-shadow:0 2px 8px rgba(0,0,0,0.06);color:#1e293b!important;font-weight:700;border:1px solid #e2e8f0;}
+.hide{display:none!important;}
+.input-box{border:1px solid #e2e8f0!important;border-radius:10px!important;padding:12px!important;width:100%;outline:none;background:#fff;font-size:14px;color:#475569;font-family:'Inter',sans-serif;}
+.input-box:focus{border-color:#5c4ce3!important;}
+.label-text{font-weight:700;font-size:13px;margin-bottom:8px;display:block;color:#0f172a;}
+.helper-text{font-size:13px;color:#94a3b8;margin-bottom:20px;margin-top:-2px;}
+.btn-submit{background-color:#5c4ce3;color:white;opacity:0.45;cursor:not-allowed;transition:all 0.2s;font-weight:700;padding:11px 24px;border-radius:10px;display:flex;align-items:center;gap:10px;border:none;font-family:'Inter',sans-serif;}
+.btn-submit.enabled{opacity:1;cursor:pointer;box-shadow:0 4px 12px rgba(92,76,227,0.25);}
+.btn-submit.enabled:hover{background:#4a3bbf;}
+.empty-message{text-align:center;padding:60px 20px;color:#cbd5e1;font-size:15px;font-weight:500;}
+.q-card{background:white;border:1px solid #f1f5f9;border-radius:14px;padding:24px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,0.03);}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;}
+.modal-box{background:white;border-radius:18px;padding:32px;width:90%;max-width:580px;max-height:85vh;overflow-y:auto;}
+.submission-row{display:flex;justify-content:space-between;align-items:center;padding:12px;border-bottom:1px solid #f1f5f9;font-size:14px;}
+.submission-badge{background:#dcfce7;color:#16a34a;padding:3px 10px;border-radius:99px;font-size:12px;font-weight:700;}
+.ai-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:40px;}
+.ai-spinner{width:40px;height:40px;border:3px solid #ede9fe;border-top:3px solid #5c4ce3;border-radius:50%;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.ai-badge{background:linear-gradient(135deg,#5c4ce3,#8b5cf6);color:white;padding:4px 12px;border-radius:99px;font-size:11px;font-weight:700;letter-spacing:0.5px;display:inline-flex;align-items:center;gap:5px;}
+.topbar{background:#1e1b4b;color:#fff;display:flex;justify-content:space-between;align-items:center;padding:0 28px;height:60px;}
+.logo-icon{width:34px;height:34px;background:linear-gradient(135deg,#5c4ce3,#8b5cf6);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;}
+/* Profile */
+.profile-wrap{position:relative;}
+.profile-avatar{width:36px;height:36px;background:#5c4ce3;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:#fff;cursor:pointer;border:2px solid rgba(255,255,255,0.3);}
+.profile-dropdown{position:absolute;top:46px;right:0;width:260px;background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.18);z-index:999;overflow:hidden;display:none;border:1px solid #e2e8f0;}
+.profile-dropdown.open{display:block;}
+.pd-header{padding:16px;background:linear-gradient(135deg,#5c4ce3,#8b5cf6);color:#fff;}
+.pd-name{font-size:15px;font-weight:800;}
+.pd-meta{font-size:11px;opacity:0.8;margin-top:2px;}
+.pd-item{padding:12px 16px;font-size:13px;font-weight:600;color:#374151;cursor:pointer;display:flex;align-items:center;gap:10px;border-bottom:1px solid #f1f5f9;}
+.pd-item:hover{background:#f5f3ff;color:#5c4ce3;}
+.pd-logout{color:#ef4444;border-bottom:none;}
+.pd-logout:hover{background:#fef2f2;color:#ef4444;}
+/* action buttons */
+.act-btn{font-size:12px;font-weight:600;padding:5px 12px;border-radius:8px;border:none;cursor:pointer;font-family:inherit;}
+.act-view{background:#ede9fe;color:#5c4ce3;}
+.act-edit{background:#fef3c7;color:#d97706;}
+.act-del{background:#fef2f2;color:#ef4444;}
+.act-subs{background:#ede9fe;color:#5c4ce3;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div style="display:flex;align-items:center;gap:10px;">
+    <div class="logo-icon">🎓</div>
+    <div>
+      <div style="font-weight:700;font-size:15px">Evalyntra</div>
+      <div style="font-size:11px;opacity:0.6">Lecturer Dashboard</div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <div class="profile-wrap">
+      <div class="profile-avatar" id="profileAvatar" onclick="toggleProfile()">L</div>
+      <div class="profile-dropdown" id="profileDropdown">
+        <div class="pd-header">
+          <div class="pd-name" id="pdName">Lecturer</div>
+          <div class="pd-meta" id="pdMeta"></div>
+        </div>
+        <div class="pd-item" onclick="switchTab('notes');closeProfile()">📖 My Notes</div>
+        <div class="pd-item" onclick="switchTab('videos');closeProfile()">🎬 My Videos</div>
+        <div class="pd-item" onclick="switchTab('assignments');closeProfile()">📋 My Assignments</div>
+        <div class="pd-item" onclick="switchTab('quizzes');closeProfile()">✅ My Quizzes</div>
+        <div class="pd-item pd-logout" onclick="handleLogout()">🚪 Logout</div>
+      </div>
+    </div>
+    <button style="padding:8px 18px;background:transparent;border:1.5px solid rgba(255,255,255,0.3);border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:#fff;font-family:inherit" onclick="handleLogout()">Logout</button>
+  </div>
+</div>
+
+<div id="main-dashboard" class="max-w-2xl mx-auto p-6">
+  <header class="mb-8">
+    <h2 class="text-xl font-bold" id="lecturerHeader"></h2>
+    <p class="text-slate-500 text-sm mt-1" id="lecturerMeta"></p>
+  </header>
+  <nav class="flex p-1 bg-gray-100/60 rounded-xl mb-8 border border-gray-200/50 gap-1 overflow-x-auto">
+    <button onclick="switchTab('notes')" id="btn-notes-tab" class="tab-btn flex-1 py-2.5 rounded-lg text-xs font-medium text-slate-500 whitespace-nowrap px-2 min-w-fit">📖 Notes</button>
+    <button onclick="switchTab('videos')" id="btn-videos-tab" class="tab-btn flex-1 py-2.5 rounded-lg text-xs font-medium text-slate-500 whitespace-nowrap px-2 min-w-fit">🎬 Videos</button>
+    <button onclick="switchTab('assignments')" id="btn-assignments-tab" class="tab-btn flex-1 py-2.5 rounded-lg text-xs font-medium text-slate-500 whitespace-nowrap px-2 min-w-fit">📋 Assignments</button>
+    <button onclick="switchTab('quizzes')" id="btn-quizzes-tab" class="tab-btn flex-1 py-2.5 rounded-lg text-xs font-medium text-slate-500 whitespace-nowrap px-2 min-w-fit">✅ Quizzes</button>
+        <button onclick="switchTab('quiz-results')" id="btn-quiz-results-tab" class="tab-btn flex-1 py-2.5 rounded-lg text-xs font-medium text-slate-500 whitespace-nowrap px-2 min-w-fit">🏆 Quiz Results</button>
+  </nav>
+  <div class="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm mb-8">
+    <div id="form-body"></div>
+  </div>
+  <div id="list-section">
+    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Published Content</h3>
+    <div id="item-container" class="space-y-3"></div>
+  </div>
+</div>
+
+<!-- Quiz Question Screen -->
+<div id="quiz-question-screen" class="max-w-2xl mx-auto hide p-6">
+  <div class="flex items-center justify-between mb-6 border-b pb-4">
+    <div>
+      <h2 class="text-xl font-bold">Quiz Questions</h2>
+      <span id="ai-gen-badge" class="hide ai-badge mt-2">✨ AI Generated</span>
+    </div>
+    <button onclick="closeQuestionScreen()" class="text-slate-400 text-2xl font-bold">&times;</button>
+  </div>
+  <div id="question-inputs-container"></div>
+  <button onclick="finalizeQuiz()" class="w-full py-4 text-white font-bold rounded-xl mt-6" style="background:#5c4ce3">Create Quiz</button>
+</div>
+
+<!-- Submission Modal -->
+<div id="submission-modal" class="modal-overlay hide">
+  <div class="modal-box">
+    <div class="flex justify-between items-center mb-6">
+      <div>
+        <h3 class="text-lg font-bold" id="modal-assignment-title"></h3>
+        <p class="text-xs text-slate-400 mt-1" id="modal-submission-count"></p>
+      </div>
+      <button onclick="closeModal('submission-modal')" class="text-slate-400 text-2xl font-bold">&times;</button>
+    </div>
+    <div id="modal-submission-list"></div>
+  </div>
+</div>
+
+<!-- Edit Modal -->
+<div id="edit-modal" class="modal-overlay hide">
+  <div class="modal-box">
+    <div class="flex justify-between items-center mb-6">
+      <h3 class="text-lg font-bold" id="edit-modal-title">Edit</h3>
+      <button onclick="closeModal('edit-modal')" class="text-slate-400 text-2xl font-bold">&times;</button>
+    </div>
+    <div id="edit-modal-body"></div>
+  </div>
+</div>
+
+<script>
+const BASE="http://localhost:3000";
+let loggedInUser=null, activeTab='notes', isAIGenerated=false;
+
+document.addEventListener("DOMContentLoaded",()=>{
+  const u=JSON.parse(localStorage.getItem("loggedInUser")||"null");
+  if(!u||u.role!=="lecturer"){window.location.href="login.html";return;}
+  loggedInUser=u;
+  document.getElementById("lecturerHeader").textContent=`${u.name} — ${u.subject}`;
+  document.getElementById("lecturerMeta").textContent=`${u.college} • ${u.branch} • Year ${u.year} • Section ${u.section}`;
+  document.getElementById("profileAvatar").textContent=(u.name||'L')[0].toUpperCase();
+  document.getElementById("pdName").textContent=u.name;
+  document.getElementById("pdMeta").textContent=`${u.subject} · ${u.college}`;
+  switchTab('notes');
+});
+
+// Profile
+function toggleProfile(){document.getElementById('profileDropdown').classList.toggle('open');}
+function closeProfile(){document.getElementById('profileDropdown').classList.remove('open');}
+document.addEventListener('click',e=>{const w=document.querySelector('.profile-wrap');if(w&&!w.contains(e.target))closeProfile();});
+
+// Tabs
+function switchTab(tab){
+  activeTab=tab;
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('tab-active'));
+  document.getElementById(`btn-${tab}-tab`).classList.add('tab-active');
+  const ls=document.getElementById('list-section');
+  
+  if(tab==='quiz-results'){ls.style.display='none';renderQuizResultsTab();}
+  else{ls.style.display='block';renderForm(tab);renderList();}
+}
+
+// Submissions tab
+async function renderSubmissionsTab(){
+  const form=document.getElementById('form-body');
+  form.innerHTML=`<h2 class="text-xl font-bold mb-1">Student Submissions</h2><p class="helper-text">All assignment submissions from your students</p><div id="submissions-content"><div class="ai-loading"><div class="ai-spinner"></div><p class="text-sm text-slate-400">Loading...</p></div></div>`;
+  try{
+    const res=await fetch(`${BASE}/api/assignments/${loggedInUser.groupKey}?subject=${encodeURIComponent(loggedInUser.subject)}`);
+    const assignments=await res.json();
+    const c=document.getElementById('submissions-content');
+    if(!assignments||!assignments.length){c.innerHTML=`<div class="empty-message">No assignments yet.</div>`;return;}
+    c.innerHTML=assignments.map(a=>{
+      const sc=a.submissions?a.submissions.length:0;
+      return `<div class="q-card"><div class="flex justify-between items-start mb-3"><div><h4 class="font-bold text-sm">${a.title}</h4><p class="text-xs text-slate-400 mt-1">Due: ${new Date(a.dueDate).toLocaleString()}</p></div><span class="ml-3 text-xs font-bold px-3 py-1 rounded-full" style="background:#ede9fe;color:#5c4ce3">${sc} submitted</span></div><button onclick="openSubmissionsFor('${a._id}','${(a.title||'').replace(/'/g,"\\'")}') " class="w-full py-2 text-sm font-semibold rounded-lg" style="background:#ede9fe;color:#5c4ce3">👁 View Submissions (${sc})</button></div>`;
+    }).join('');
+  }catch(e){document.getElementById('submissions-content').innerHTML=`<div class="empty-message">Server error.</div>`;}
+}
+
+async function renderQuizResultsTab(){
+  const form=document.getElementById('form-body');
+  const listSection=document.getElementById('list-section');
+  listSection.style.display='none';
+  form.innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <h2 class="text-xl font-bold">🏆 Quiz Results</h2>
+      <button onclick="exportQuizCSV()" style="background:#5c4ce3;color:#fff;border:none;padding:7px 16px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">⬇ Export CSV</button>
+    </div>
+    <p class="helper-text" style="margin-bottom:16px">Student-wise scores for every quiz in <strong>${loggedInUser.subject}</strong></p>
+    <div id="quiz-results-content"><div class="ai-loading"><div class="ai-spinner"></div><p class="text-sm text-slate-400">Loading results...</p></div></div>`;
+  try{
+    const res=await fetch(`${BASE}/api/quizzes/${loggedInUser.groupKey}?subject=${encodeURIComponent(loggedInUser.subject)}&uploadedBy=${encodeURIComponent(loggedInUser.name)}`);
+    const quizzes=await res.json();
+    const c=document.getElementById('quiz-results-content');
+    if(!quizzes||!quizzes.length){c.innerHTML=`<div class="empty-message">No quizzes created yet for this subject.</div>`;return;}
+
+    // Collect all unique students across all quiz attempts
+    const studentMap={}; // usn -> { name, usn, scores: { quizId: {score,total,pct} } }
+    quizzes.forEach(q=>{
+      (q.attempts||[]).forEach(a=>{
+        if(!studentMap[a.studentUSN]){
+          studentMap[a.studentUSN]={ name:a.studentName||'Unknown', usn:a.studentUSN, scores:{} };
+        }
+        const total=q.questions?q.questions.length:0;
+        const pct=total>0?Math.round((a.score/total)*100):0;
+        studentMap[a.studentUSN].scores[q._id]={ score:a.score, total, pct };
+      });
+    });
+
+    const students=Object.values(studentMap).sort((a,b)=>a.name.localeCompare(b.name));
+
+    if(!students.length){
+      c.innerHTML=`<div class="empty-message">No students have attempted any quiz yet.</div>`;return;
+    }
+
+    // Store for CSV export
+    window._quizExportData = { quizzes, students };
+
+    // --- Build responsive table ---
+    const quizCols=quizzes.map((q,i)=>`
+      <th style="min-width:100px;padding:10px 14px;background:#4338ca;color:#fff;font-size:11px;font-weight:700;text-align:center;border-right:1px solid rgba(255,255,255,0.15)">
+        Quiz ${i+1}<br>
+        <span style="font-size:10px;font-weight:400;opacity:0.9;display:block;margin-top:2px">${q.title.length>16?q.title.substring(0,16)+'…':q.title}</span>
+        <span style="font-size:9px;font-weight:400;opacity:0.7">(/${q.questions?q.questions.length:0} marks)</span>
+      </th>`).join('');
+
+    const rows=students.map((st,si)=>{
+      const cells=quizzes.map(q=>{
+        const a=st.scores[q._id];
+        const isExpired =
+  q.dueDate &&
+  new Date() > new Date(q.dueDate);
+
+if(!a){
+
+  // Expired but not attempted
+  if(isExpired){
+    return `<td style="padding:10px 14px;text-align:center;border-right:1px solid #f1f5f9">
+      <div style="font-weight:800;font-size:14px;color:#dc2626">0/${q.questions?q.questions.length:0}</div>
+      <div style="font-size:11px;font-weight:600;color:#dc2626;background:#fef2f2;padding:2px 7px;border-radius:10px;display:inline-block;margin-top:2px">0%</div>
+    </td>`;
+  }
+
+  // Active and not attempted
+  return `<td style="padding:10px 14px;text-align:center;color:#cbd5e1;font-size:14px;border-right:1px solid #f1f5f9">—</td>`;
+}
+        const col=a.pct>=70?'#16a34a':a.pct>=45?'#d97706':'#dc2626';
+        const bg=a.pct>=70?'#f0fdf4':a.pct>=45?'#fef3c7':'#fef2f2';
+        return `<td style="padding:10px 14px;text-align:center;border-right:1px solid #f1f5f9">
+          <div style="font-weight:800;font-size:14px;color:${col}">${a.score}/${a.total}</div>
+          <div style="font-size:11px;font-weight:600;color:${col};background:${bg};padding:2px 7px;border-radius:10px;display:inline-block;margin-top:2px">${a.pct}%</div>
+        </td>`;
+      }).join('');
+
+      let totalMarks = 0;
+let totalPossibleMarks = 0;
+let countedQuizzes = 0;
+
+quizzes.forEach(q => {
+
+  const attempt = st.scores[q._id];
+
+  const isExpired =
+    q.dueDate &&
+    new Date() > new Date(q.dueDate);
+
+  const quizTotal =
+    q.questions ? q.questions.length : 0;
+
+  // Attempted quiz
+  if (attempt) {
+
+    totalMarks += attempt.score;
+    totalPossibleMarks += quizTotal;
+    countedQuizzes++;
+  }
+
+  // Expired but NOT attempted
+  else if (isExpired) {
+
+    totalMarks += 0;
+    totalPossibleMarks += quizTotal;
+    countedQuizzes++;
+  }
+
+  // Active but not attempted
+  // Ignore completely
+});
+
+const avgPct =
+  totalPossibleMarks > 0
+    ? Math.round((totalMarks / totalPossibleMarks) * 100)
+    : 0;
+      const avgCol=avgPct>=70?'#16a34a':avgPct>=45?'#d97706':'#dc2626';
+      const avgBg=avgPct>=70?'#f0fdf4':avgPct>=45?'#fef3c7':'#fef2f2';
+      const rowBg=si%2===0?'#fff':'#fafafa';
+
+      return `<tr style="background:${rowBg};border-bottom:1px solid #f1f5f9">
+        <td style="padding:10px 14px;border-right:1px solid #f1f5f9;white-space:nowrap">
+          <div style="font-size:13px;font-weight:700;color:#1e293b">${st.name}</div>
+          <div style="font-size:11px;color:#94a3b8;margin-top:1px">${st.usn}</div>
+        </td>
+        ${cells}
+        <td style="padding:10px 14px;text-align:center">
+          <div style="font-weight:800;font-size:14px;color:${avgCol};background:${avgBg};padding:4px 12px;border-radius:12px;display:inline-block">${avgPct}%</div>
+          <div style="font-size:10px;color:#94a3b8;margin-top:1px">${countedQuizzes}/${quizzes.length} counted</div>
+        </td>
+      </tr>`;
+    }).join('');
+
+    const totalAttempted=students.filter(st=>Object.keys(st.scores).length>0).length;
+
+    c.innerHTML=`
+      <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap">
+        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:12px 18px;flex:1;min-width:100px;text-align:center">
+          <div style="font-size:22px;font-weight:800;color:#5c4ce3">${quizzes.length}</div>
+          <div style="font-size:11px;color:#94a3b8;font-weight:600;text-transform:uppercase">Quizzes</div>
+        </div>
+        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:12px 18px;flex:1;min-width:100px;text-align:center">
+          <div style="font-size:22px;font-weight:800;color:#5c4ce3">${students.length}</div>
+          <div style="font-size:11px;color:#94a3b8;font-weight:600;text-transform:uppercase">Students</div>
+        </div>
+        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:12px 18px;flex:1;min-width:100px;text-align:center">
+          <div style="font-size:22px;font-weight:800;color:#16a34a">${totalAttempted}</div>
+          <div style="font-size:11px;color:#94a3b8;font-weight:600;text-transform:uppercase">Attempted</div>
+        </div>
+      </div>
+      <div style="overflow-x:auto;border-radius:16px;border:1px solid #e2e8f0;box-shadow:0 2px 8px rgba(0,0,0,0.05)">
+        <table style="width:100%;border-collapse:collapse;min-width:600px">
+          <thead>
+            <tr style="background:#5c4ce3">
+              <th style="padding:12px 14px;text-align:left;color:#fff;font-size:12px;font-weight:700;min-width:160px;border-right:1px solid rgba(255,255,255,0.15)">Student Name / USN</th>
+              ${quizCols}
+              <th style="padding:12px 14px;background:#4338ca;color:#fff;font-size:12px;font-weight:700;text-align:center;min-width:90px">Avg Score</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>`;
+  }catch(e){
+    console.error('Quiz results error:',e);
+    document.getElementById('quiz-results-content').innerHTML=`<div class="empty-message" style="color:#ef4444">Error loading results. Is the server running?</div>`;
+  }
+}
+
+function exportQuizCSV(){
+  const d=window._quizExportData;
+  if(!d){alert('No data to export. Load the tab first.');return;}
+  const {quizzes,students}=d;
+  const headers=['Name','USN',...quizzes.map((q,i)=>`Quiz${i+1}_${q.title.replace(/,/g,' ')}`),'Average%'];
+  const rows=students.map(st=>{
+    const cells=quizzes.map(q=>st.scores[q._id]?`${st.scores[q._id].score}/${st.scores[q._id].total} (${st.scores[q._id].pct}%)`:'-');
+    const attempted=quizzes.filter(q=>st.scores[q._id]);
+    const avg=attempted.length>0?Math.round(attempted.reduce((s,q)=>s+st.scores[q._id].pct,0)/attempted.length):0;
+    return [st.name,st.usn,...cells,avg+'%'].join(',');
+  });
+  const csv=[headers.join(','),...rows].join('\n');
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download=`quiz_results_${loggedInUser.subject.replace(/ /g,'_')}.csv`;
+  a.click();
+}
+
+async function openSubmissionsFor(aId,aTitle){
+  document.getElementById('modal-assignment-title').textContent=aTitle;
+  document.getElementById('modal-submission-count').textContent='Loading...';
+  document.getElementById('modal-submission-list').innerHTML=`<div class="ai-loading"><div class="ai-spinner"></div></div>`;
+  document.getElementById('submission-modal').classList.remove('hide');
+  try{
+    const res=await fetch(`${BASE}/api/assignments/${loggedInUser.groupKey}?subject=${encodeURIComponent(loggedInUser.subject)}`);
+    const assignments=await res.json();
+    const assignment=assignments.find(a=>a._id===aId);
+    const subs=assignment?(assignment.submissions||[]):[];
+    document.getElementById('modal-submission-count').textContent=`${subs.length} submission${subs.length!==1?'s':''}`;
+    if(!subs.length){document.getElementById('modal-submission-list').innerHTML=`<p class="text-center text-slate-400 py-10 text-sm">No submissions yet.</p>`;return;}
+    document.getElementById('modal-submission-list').innerHTML=subs.map(s=>{
+      const hasFile=s.fileUrl&&s.fileUrl!=='text-submission';
+      const viewBtn=hasFile?`<a href="${BASE}/api/submissions/file/${encodeURIComponent(s.fileUrl)}" target="_blank" style="background:#5c4ce3;color:#fff;padding:5px 13px;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;display:inline-block;margin-right:6px">📄 View PDF</a>`:'';
+      return `<div class="submission-row"><div><p class="font-semibold text-sm">${s.studentName||'Unknown'}</p><p class="text-xs text-slate-400 mt-0.5">${s.studentUSN||''} • ${s.submittedAt?new Date(s.submittedAt).toLocaleString():''}</p></div><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">${viewBtn}<span class="submission-badge">✓ Submitted</span></div></div>`;
+    }).join('');
+  }catch(e){document.getElementById('modal-submission-list').innerHTML=`<p class="text-center text-red-400 py-8 text-sm">Error loading</p>`;}
+}
+function closeModal(id){document.getElementById(id).classList.add('hide');}
+
+// Forms
+function renderForm(tab){
+  const form=document.getElementById('form-body');
+  if(tab==='notes'){
+    form.innerHTML=`<h2 class="text-xl font-bold mb-1">Upload Notes</h2><p class="helper-text">Share study materials (PDF only)</p>
+    <label class="label-text">Note Title</label><input type="text" id="n-t" oninput="validate()" placeholder="e.g. Chapter 1" class="input-box mb-5">
+    <label class="label-text">Select PDF File</label><div style="border:1px solid #e2e8f0;border-radius:10px;padding:10px;background:white;" class="mb-7"><input type="file" id="n-f" accept="application/pdf" onchange="validate()"></div>
+    <button id="sub-btn" disabled onclick="saveNote()" class="btn-submit">📤 Upload Note</button>`;
+  }else if(tab==='videos'){
+    form.innerHTML=`<h2 class="text-xl font-bold mb-1">Add Video Lecture</h2><p class="helper-text">Paste a YouTube link</p>
+    <label class="label-text">Video Title</label><input type="text" id="v-t" oninput="validate()" placeholder="e.g. Unit 2 — SQL Joins" class="input-box mb-4">
+    <label class="label-text">YouTube Link</label><input type="url" id="v-l" oninput="validate()" placeholder="https://www.youtube.com/watch?v=XXXX" class="input-box mb-7">
+    <button id="sub-btn" disabled onclick="saveVideo()" class="btn-submit">🎬 Add Video</button>`;
+  }else if(tab==='assignments'){
+    form.innerHTML=`<h2 class="text-xl font-bold mb-1">New Assignment</h2><p class="helper-text">Students submit PDF before due date.</p>
+    <label class="label-text">Title</label><input type="text" id="a-t" oninput="validate()" placeholder="e.g. Unit 1 Homework" class="input-box mb-4">
+    <label class="label-text">Description / Questions</label><textarea id="a-q" oninput="validate()" placeholder="Instructions here..." class="input-box mb-4" rows="4"></textarea>
+    <label class="label-text">Due Date & Time</label><input type="datetime-local" id="a-dt" oninput="validate()" class="input-box mb-7">
+    <button id="sub-btn" disabled onclick="saveAssignment()" class="btn-submit">📋 Create Assignment</button>`;
+  }else if(tab==='quizzes'){
+    form.innerHTML=`<h2 class="text-xl font-bold mb-1">New Quiz</h2><p class="helper-text">Create timed quizzes — manually or with Gemini AI ✨</p>
+    <label class="label-text">Quiz Title</label><input type="text" id="q-t" oninput="validate()" class="input-box mb-4">
+    <div class="grid grid-cols-2 gap-4 mb-4">
+      <div><label class="label-text">Duration (min)</label><input type="number" id="q-tm" min="1" max="180" value="10" class="input-box"></div>
+      <div><label class="label-text">No. of Questions</label><input type="number" id="q-c" min="1" max="20" value="5" class="input-box"></div>
+    </div>
+    <label class="label-text">Due Date & Time</label>
+    <div style="display:flex;gap:8px;margin-bottom:8px;align-items:center">
+      <input type="datetime-local" id="q-dt" oninput="validate()" class="input-box" style="flex:1;margin-bottom:0!important">
+      <button onclick="setQuizDT()" style="padding:12px 16px;background:#5c4ce3;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:inherit;flex-shrink:0">Set ✓</button>
+    </div>
+    <div id="q-dt-display" style="display:none;font-size:12px;color:#16a34a;font-weight:600;margin-bottom:20px;padding:8px 12px;background:#f0fdf4;border-radius:8px">✓ Due date set</div>
+    <div class="rounded-xl p-5 mb-5" style="background:#f5f3ff;border:1px solid #c4b5fd">
+      <div class="flex items-center gap-2 mb-1"><span class="text-lg">✨</span><p class="text-sm font-bold" style="color:#5c4ce3">AI Quiz Generator</p></div>
+      <p class="text-xs mb-4" style="color:#8b5cf6">Enter a topic and Gemini AI generates MCQs instantly</p>
+      <label class="label-text">Topic / Subject Area</label>
+      <input type="text" id="q-topic" placeholder="e.g. SQL Joins, Ohm's Law, Recursion" class="input-box mb-3">
+      <button onclick="generateAIQuiz()" id="ai-gen-btn" class="w-full py-3 text-white font-semibold rounded-xl text-sm flex items-center justify-center gap-2" style="background:#5c4ce3">✨ Generate Questions with Gemini AI</button>
+      <p class="text-xs text-center mt-2" style="color:#8b5cf6">Powered by Google Gemini</p>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+      <div style="flex:1;height:1px;background:#e2e8f0"></div>
+      <span style="font-size:12px;color:#94a3b8;font-weight:600;white-space:nowrap">— or create manually —</span>
+      <div style="flex:1;height:1px;background:#e2e8f0"></div>
+    </div>
+    <button id="sub-btn" disabled onclick="openQuestionScreen()" class="btn-submit w-full justify-center">📝 Setup Questions Manually</button>`;
+  }
+  validate();
+}
+
+function setQuizDT(){
+  const v=document.getElementById('q-dt').value;
+  if(!v){alert("Please select a date and time first.");return;}
+  const d=new Date(v);
+  const el=document.getElementById('q-dt-display');
+  el.style.display='block';
+  el.textContent=`✓ Due: ${d.toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})} at ${d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'})}`;
+  validate();
+}
+
+// AI Quiz
+async function generateAIQuiz(){
+  const topic=document.getElementById('q-topic').value.trim();
+  const count=parseInt(document.getElementById('q-c').value)||5;
+  const title=document.getElementById('q-t').value.trim();
+  const dueDate=document.getElementById('q-dt').value;
+  if(!topic){alert("Please enter a topic first.");return;}
+  if(!title){alert("Please enter a quiz title first.");return;}
+  if(!dueDate){alert("Please select and set a due date first.");return;}
+  const btn=document.getElementById('ai-gen-btn');
+  // Lock both buttons — only one path per quiz allowed
+  btn.disabled=true;
+  const _manBtn=document.getElementById('sub-btn');
+  if(_manBtn){_manBtn.disabled=true;_manBtn.style.opacity='0.35';_manBtn.title='AI generation in progress — reload to use manual mode';}
+  btn.innerHTML=`<svg class="animate-spin w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>Generating with Gemini...`;
+  let questions=null;
+  let errMsg='Unknown error';
+  try{
+    const res=await fetch(`${BASE}/api/generate-quiz`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({topic,count})});
+    const data=await res.json();
+    if(data.error){errMsg=data.error;throw new Error(data.error);}
+    const raw=(data.result||'').replace(/```json|```/g,'').trim();
+    const arrMatch=raw.match(/\[[\s\S]*\]/);
+    if(arrMatch){
+      try{questions=JSON.parse(arrMatch[0]);}catch(pe){errMsg='Could not parse AI response as JSON';console.error('Parse err:',pe.message,raw.substring(0,200));}
+    } else { errMsg='AI returned no valid JSON array'; console.log('Raw AI response:',raw.substring(0,300)); }
+  }catch(e){console.log('Quiz gen error:',e.message);errMsg=e.message;}
+  btn.disabled=false;
+  btn.innerHTML='✨ Generate Questions with Gemini AI';
+  if(!questions||!questions.length){
+    alert('AI generation failed: '+errMsg+'\n\nTip: Make sure the server is running (node server.js) and internet is connected.');
+    return;
+  }
+  isAIGenerated=true;
+  buildAIQuestionScreen(questions);
+}
+
+function buildAIQuestionScreen(questions){
+  const c=document.getElementById('question-inputs-container');
+  c.innerHTML='';
+  questions.forEach((q,i)=>{
+    const idx=i+1;
+    c.innerHTML+=`<div class="q-card"><div class="flex justify-between items-center mb-3"><h4 class="font-bold uppercase text-xs" style="color:#5c4ce3">Question ${idx}</h4><span class="ai-badge">✨ AI</span></div>
+    <textarea class="input-box mb-3">${q.question}</textarea>
+    <select class="input-box mb-3" onchange="toggleQType(this,${idx})"><option value="mcq">MCQ</option><option value="written">Written</option></select>
+    <div id="mcq-${idx}">${(q.options||['','','','']).map((opt,oi)=>`<div class="flex items-center gap-3 mb-2"><input type="radio" name="c-${idx}" class="w-4 h-4" style="accent-color:#5c4ce3" ${oi===(q.correctIndex||0)?'checked':''}><input type="text" placeholder="Option ${oi+1}" class="input-box py-2" value="${opt}"></div>`).join('')}</div>
+    <div id="wri-${idx}" class="hide"><input type="text" placeholder="Correct Answer Key" class="input-box"></div></div>`;
+  });
+  document.getElementById('ai-gen-badge').classList.remove('hide');
+  document.getElementById('main-dashboard').classList.add('hide');
+  document.getElementById('quiz-question-screen').classList.remove('hide');
+}
+
+function validate(){
+  const btn=document.getElementById('sub-btn');
+  if(!btn)return;
+  let ok=false;
+  if(activeTab==='notes')ok=!!(document.getElementById('n-t')?.value&&document.getElementById('n-f')?.files[0]);
+  if(activeTab==='videos')ok=!!(document.getElementById('v-t')?.value&&document.getElementById('v-l')?.value);
+  if(activeTab==='assignments')ok=!!(document.getElementById('a-t')?.value&&document.getElementById('a-q')?.value&&document.getElementById('a-dt')?.value);
+  if(activeTab==='quizzes')ok=!!(document.getElementById('q-t')?.value&&document.getElementById('q-dt')?.value);
+  btn.classList.toggle('enabled',ok);
+  btn.disabled=!ok;
+}
+
+// Render list with View + Edit + Delete
+async function renderList(){
+  const container=document.getElementById('item-container');
+  container.innerHTML='<div class="empty-message"><div class="ai-spinner mx-auto mb-2"></div>Loading...</div>';
+  try{
+    const res=await fetch(`${BASE}/api/${activeTab}/${loggedInUser.groupKey}?subject=${encodeURIComponent(loggedInUser.subject)}&uploadedBy=${encodeURIComponent(loggedInUser.name)}`);
+    const items=await res.json();
+    if(!items||!items.length){
+      const msgs={notes:"No notes uploaded yet",videos:"No videos yet",assignments:"No assignments yet",quizzes:"No quizzes yet"};
+      container.innerHTML=`<div class="empty-message">${msgs[activeTab]}</div>`;return;
+    }
+    container.innerHTML=items.map(i=>{
+      const dt=i.dueDate?`<p class="text-xs text-slate-400 mt-0.5">Due: ${new Date(i.dueDate).toLocaleString()}</p>`:'';
+      const st=activeTab==='assignments'?`<p class="text-xs mt-1 font-semibold" style="color:#5c4ce3">${i.submissions?.length||0} submissions</p>`:'';
+      const at=activeTab==='quizzes'?`<p class="text-xs mt-1 font-semibold" style="color:#5c4ce3">${i.attempts?.length||0} attempts</p>`:'';
+      const ai=i.aiGenerated?`<span class="ai-badge text-xs ml-1">✨ AI</span>`:'';
+      let actions='';
+      if(activeTab==='notes')actions+=`<button class="act-btn act-view view-btn" data-file="${i.fileUrl}">View</button>`;
+      if(activeTab==='videos')actions+=`<button class="act-btn act-view view-btn" data-link="${i.link}">Watch</button>`;
+      if(activeTab==='assignments'){
+        const subCount=i.submissions?.length||0;
+        actions+=`<button class="act-btn act-subs" onclick="openSubmissionsFor('${i._id}','${(i.title||'').replace(/'/g,"\'")}')">👁 Submissions${subCount>0?` <span style="background:#5c4ce3;color:#fff;border-radius:10px;padding:1px 7px;font-size:11px;margin-left:3px">${subCount}</span>`:''}</button>`;
+      }
+      if(activeTab!=='quizzes')actions+=`<button class="act-btn act-edit edit-btn" data-id="${i._id}" data-type="${activeTab}">Edit</button>`;
+      actions+=`<button class="act-btn act-del delete-btn" data-id="${i._id}" data-type="${activeTab}">Delete</button>`;
+      return `<div class="flex items-center justify-between p-4 border border-gray-100 rounded-xl bg-white shadow-sm gap-3 flex-wrap"><div class="flex-1 min-w-0"><p class="text-sm font-semibold flex items-center gap-1 flex-wrap">${i.title}${ai}</p>${dt}${at}</div><div class="flex gap-2 items-center flex-wrap">${actions}</div></div>`;
+    }).join('');
+  }catch(e){container.innerHTML=`<div class="empty-message">Failed to load. Is the server running?</div>`;}
+}
+
+document.getElementById('item-container').addEventListener('click',async e=>{
+  const del=e.target.closest('.delete-btn');
+  if(del){if(!confirm("Delete this item?"))return;const r=await fetch(`${BASE}/api/${del.dataset.type}/${del.dataset.id}`,{method:'DELETE'});if(r.ok)renderList();else alert("Delete failed.");return;}
+  const view=e.target.closest('.view-btn');
+  if(view){if(activeTab==='notes'&&view.dataset.file)window.open(`${BASE}/api/notes/file/${view.dataset.file}`,'_blank');if(activeTab==='videos'&&view.dataset.link)window.open(view.dataset.link,'_blank');return;}
+  const edit=e.target.closest('.edit-btn');
+  if(edit){openEditModal(edit.dataset.id,edit.dataset.type);return;}
+});
+
+// Edit modal
+async function openEditModal(id,type){
+  const res=await fetch(`${BASE}/api/${type}/${loggedInUser.groupKey}?subject=${encodeURIComponent(loggedInUser.subject)}&uploadedBy=${encodeURIComponent(loggedInUser.name)}`);
+  const items=await res.json();
+  const item=items.find(i=>i._id===id);
+  if(!item)return;
+  document.getElementById('edit-modal-title').textContent=type==='notes'?'Edit Note':type==='videos'?'Edit Video':'Edit Assignment';
+  let body='';
+  if(type==='notes'){
+    body=`<label class="label-text">Title</label><input id="edit-title" class="input-box mb-5" value="${item.title||''}"><button onclick="saveEdit('${id}','${type}')" class="w-full py-3 text-white font-bold rounded-xl" style="background:#5c4ce3">Save Changes</button>`;
+  }else if(type==='videos'){
+    body=`<label class="label-text">Title</label><input id="edit-title" class="input-box mb-4" value="${item.title||''}"><label class="label-text">YouTube Link</label><input id="edit-link" class="input-box mb-5" value="${item.link||''}"><button onclick="saveEdit('${id}','${type}')" class="w-full py-3 text-white font-bold rounded-xl" style="background:#5c4ce3">Save Changes</button>`;
+  }else if(type==='assignments'){
+    const dv=item.dueDate?new Date(item.dueDate).toISOString().slice(0,16):'';
+    body=`<label class="label-text">Title</label><input id="edit-title" class="input-box mb-4" value="${item.title||''}"><label class="label-text">Description</label><textarea id="edit-desc" class="input-box mb-4" rows="4">${item.description||''}</textarea><label class="label-text">Due Date & Time</label><input id="edit-due" type="datetime-local" class="input-box mb-5" value="${dv}"><button onclick="saveEdit('${id}','${type}')" class="w-full py-3 text-white font-bold rounded-xl" style="background:#5c4ce3">Save Changes</button>`;
+  }
+  document.getElementById('edit-modal-body').innerHTML=body;
+  document.getElementById('edit-modal').classList.remove('hide');
+}
+
+async function saveEdit(id,type){
+  let body={};
+  if(type==='notes')body.title=document.getElementById('edit-title').value;
+  else if(type==='videos'){body.title=document.getElementById('edit-title').value;body.link=document.getElementById('edit-link').value;}
+  else if(type==='assignments'){body.title=document.getElementById('edit-title').value;body.description=document.getElementById('edit-desc').value;body.dueDate=document.getElementById('edit-due').value;}
+  try{
+    const r=await fetch(`${BASE}/api/${type}/${id}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    if(r.ok){closeModal('edit-modal');renderList();}else alert("Edit failed.");
+  }catch(e){alert("Server error");}
+}
+
+// Save actions
+async function saveNote(){
+  const title=document.getElementById('n-t').value,file=document.getElementById('n-f').files[0];
+  if(!title||!file)return;
+  const fd=new FormData();
+  fd.append("title",title);fd.append("file",file);fd.append("groupKey",loggedInUser.groupKey);fd.append("uploadedBy",loggedInUser.name);fd.append("subject",loggedInUser.subject);
+  try{const r=await fetch(`${BASE}/api/notes`,{method:'POST',body:fd});if(r.ok){alert("Note uploaded!");renderList();document.getElementById('n-t').value='';document.getElementById('n-f').value='';validate();}}catch(e){alert("Server error");}
+}
+async function saveVideo(){
+  const title=document.getElementById('v-t').value,link=document.getElementById('v-l').value;
+  if(!title||!link)return;
+  try{const r=await fetch(`${BASE}/api/videos`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title,link,groupKey:loggedInUser.groupKey,uploadedBy:loggedInUser.name,subject:loggedInUser.subject})});if(r.ok){alert("Video saved!");renderList();document.getElementById('v-t').value='';document.getElementById('v-l').value='';validate();}}catch(e){alert("Server error");}
+}
+async function saveAssignment(){
+  const title=document.getElementById('a-t').value,description=document.getElementById('a-q').value,dueDate=document.getElementById('a-dt').value;
+  if(!title||!description||!dueDate)return;
+  try{const r=await fetch(`${BASE}/api/assignments`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title,description,dueDate,groupKey:loggedInUser.groupKey,uploadedBy:loggedInUser.name,subject:loggedInUser.subject})});if(r.ok){alert("Assignment created!");renderList();document.getElementById('a-t').value='';document.getElementById('a-q').value='';document.getElementById('a-dt').value='';validate();}}catch(e){alert("Server error");}
+}
+
+// Quiz
+function openQuestionScreen(){
+  // Disable AI button — only one path allowed per quiz
+  const aiBtn=document.getElementById('ai-gen-btn');
+  if(aiBtn){aiBtn.disabled=true;aiBtn.style.opacity='0.4';aiBtn.title='Manual setup in progress. Reload form to switch.';}
+  const count=parseInt(document.getElementById('q-c').value)||5;
+  const c=document.getElementById('question-inputs-container');
+  c.innerHTML='';isAIGenerated=false;
+  document.getElementById('ai-gen-badge').classList.add('hide');
+  for(let i=1;i<=count;i++){
+    c.innerHTML+=`<div class="q-card"><h4 class="font-bold mb-4 uppercase text-xs" style="color:#5c4ce3">Question ${i}</h4><textarea class="input-box mb-3" placeholder="Enter Question"></textarea><select class="input-box mb-3" onchange="toggleQType(this,${i})"><option value="mcq">MCQ</option><option value="written">Written</option></select><div id="mcq-${i}">${[1,2,3,4].map(n=>`<div class="flex items-center gap-3 mb-2"><input type="radio" name="c-${i}" class="w-4 h-4" style="accent-color:#5c4ce3"><input type="text" placeholder="Option ${n}" class="input-box py-2"></div>`).join('')}</div><div id="wri-${i}" class="hide"><input type="text" placeholder="Correct Answer Key" class="input-box"></div></div>`;
+  }
+  document.getElementById('main-dashboard').classList.add('hide');
+  document.getElementById('quiz-question-screen').classList.remove('hide');
+}
+function toggleQType(s,id){document.getElementById(`mcq-${id}`).classList.toggle('hide',s.value==='written');document.getElementById(`wri-${id}`).classList.toggle('hide',s.value==='mcq');}
+
+async function finalizeQuiz(){
+  const title=document.getElementById('q-t').value,duration=document.getElementById('q-tm').value,dueDate=document.getElementById('q-dt').value;
+  if(!title||!dueDate){alert("Quiz title and due date required");return;}
+  const questions=[];
+  try{
+    document.querySelectorAll('#question-inputs-container .q-card').forEach((c,index)=>{
+      const qText=c.querySelector('textarea').value.trim(),type=c.querySelector('select').value;
+      let answer;
+      if(type==='mcq'){const md=c.querySelector(`#mcq-${index+1}`);const options=[...md.querySelectorAll('input[type=text]')].map(i=>i.value.trim());const ci=[...md.querySelectorAll('input[type=radio]')].findIndex(r=>r.checked);if(ci===-1){alert(`Select correct option for Q${index+1}`);throw new Error();}answer={options,correct:ci};}
+      else{const wa=c.querySelector(`#wri-${index+1} input`).value.trim();if(!wa){alert(`Enter answer for Q${index+1}`);throw new Error();}answer={options:[wa],correct:0};}
+      questions.push({question:qText,type,answer});
+    });
+  }catch(e){return;}
+  try{
+    const r=await fetch(`${BASE}/api/quizzes`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title,duration,questions,dueDate,groupKey:loggedInUser.groupKey,uploadedBy:loggedInUser.name,aiGenerated:isAIGenerated,subject:loggedInUser.subject,totalMarks:questions.length})});
+    if(r.ok){
+      // Push quiz notification to students via server
+      await fetch(`${BASE}/api/notify-quiz`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({groupKey:loggedInUser.groupKey,subject:loggedInUser.subject,quizTitle:title,dueDate,lecturerName:loggedInUser.name})}).catch(()=>{});
+      alert("Quiz created! Students will be notified.");
+      closeQuestionScreen();
+      switchTab('quizzes');
+    }
+  }catch(e){alert("Server error");}
+}
+function closeQuestionScreen(){document.getElementById('quiz-question-screen').classList.add('hide');document.getElementById('main-dashboard').classList.remove('hide');document.getElementById('ai-gen-badge').classList.add('hide');}
+function handleLogout(){localStorage.clear();window.location.href="login.html";}
+</script>
+</body>
+</html>
