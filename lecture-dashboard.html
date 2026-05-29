@@ -139,7 +139,13 @@ body{font-family:'Inter',sans-serif;background:#f8f9fc;color:#1e293b;}
 </div>
 
 <script>
-const BASE="http://localhost:3000";
+const BASE="http://evalyntra-backend.onrender.com";
+fetch(`${base}/api/lectures`)
+  .then(res => res.json())
+  .then(data => {
+    console.log(data);
+  });
+  
 let loggedInUser=null, activeTab='notes', isAIGenerated=false;
 
 document.addEventListener("DOMContentLoaded",()=>{
