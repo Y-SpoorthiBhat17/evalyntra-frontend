@@ -597,11 +597,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>
 const BASE = "https://evalyntra-backend.onrender.com";
-fetch(`${base}/api/students`)
-  .then(res => res.json())
-  .then(data => {
-    console.log(data);
-  });
+
   
 const student = JSON.parse(localStorage.getItem("loggedInUser") || "null");
 if (!student || localStorage.getItem("loggedInRole") !== "student") {
