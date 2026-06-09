@@ -268,34 +268,28 @@ let totalPossibleMarks = 0;
 let countedQuizzes = 0;
 
 quizzes.forEach(q => {
+    const attempt = st.scores[q._id];
 
-  const attempt = st.scores[q._id];
+    const isExpired =
+        q.dueDate &&
+        new Date() > new Date(q.dueDate);
 
-  const isExpired =
-    q.dueDate &&
-    new Date() > new Date(q.dueDate);
+    const quizTotal =
+        q.questions ? q.questions.length : 0;
 
-  const quizTotal =
-    q.questions ? q.questions.length : 0;
-
-  // Attempted quiz
-  if (attempt) {
-
-    totalMarks += attempt.score;
-    totalPossibleMarks += quizTotal;
-    countedQuizzes++;
-  }
-
-  // Expired but NOT attempted
-  else if (isExpired) {
-
-    totalMarks += 0;
-    totalPossibleMarks += quizTotal;
-    countedQuizzes++;
-  }
-
-  // Active but not attempted
-  // Ignore completely
+    if (attempt) {
+        totalMarks += attempt.score;
+        totalPossibleMarks += quizTotal;
+        countedQuizzes++;
+    }
+    else if (isExpired) {
+        totalMarks += 0;
+        totalPossibleMarks += quizTotal;
+        countedQuizzes++;
+    }
+    else {
+    // do nothing
+}
 });
 
 const avgPct =
@@ -354,21 +348,93 @@ const avgPct =
   }
 }
 
-function exportQuizCSV(){
-  const d=window._quizExportData;
-  if(!d){alert('No data to export. Load the tab first.');return;}
-  const {quizzes,students}=d;
-  const headers=['Name','USN',...quizzes.map((q,i)=>`Quiz${i+1}_${q.title.replace(/,/g,' ')}`),'Average%'];
-  const rows=students.map(st=>{
-    const cells=quizzes.map(q=>st.scores[q._id]?`${st.scores[q._id].score}/${st.scores[q._id].total} (${st.scores[q._id].pct}%)`:'-');
-    const attempted=quizzes.filter(q=>st.scores[q._id]);
-    const avg=attempted.length>0?Math.round(attempted.reduce((s,q)=>s+st.scores[q._id].pct,0)/attempted.length):0;
-    return [st.name,st.usn,...cells,avg+'%'].join(',');
+function exportQuizCSV() {
+  const d = window._quizExportData;
+
+  if (!d) {
+    alert('No data to export. Load the tab first.');
+    return;
+  }
+
+  const { quizzes, students } = d;
+
+  const headers = [
+    'Name',
+    'USN',
+    ...quizzes.map((q, i) => `Quiz${i + 1}_${q.title.replace(/,/g, ' ')}`),
+    'Average%'
+  ];
+
+  const rows = students.map(st => {
+
+    const cells = quizzes.map(q => {
+
+      const attempt = st.scores[q._id];
+
+      const isExpired =
+        q.dueDate &&
+        new Date() > new Date(q.dueDate);
+
+      const quizTotal =
+        q.questions ? q.questions.length : 0;
+
+      if (attempt) {
+        return `${attempt.score}/${attempt.total} (${attempt.pct}%)`;
+      }
+
+      if (isExpired) {
+        return `0/${quizTotal} (0%)`;
+      }
+
+      return '-';
+    });
+
+    let totalMarks = 0;
+    let totalPossibleMarks = 0;
+
+    quizzes.forEach(q => {
+
+      const attempt = st.scores[q._id];
+
+      const isExpired =
+        q.dueDate &&
+        new Date() > new Date(q.dueDate);
+
+      const quizTotal =
+        q.questions ? q.questions.length : 0;
+
+      if (attempt) {
+        totalMarks += attempt.score;
+        totalPossibleMarks += quizTotal;
+      }
+      else if (isExpired) {
+        totalPossibleMarks += quizTotal;
+      }
+    });
+
+    const avg =
+      totalPossibleMarks > 0
+        ? Math.round((totalMarks / totalPossibleMarks) * 100)
+        : 0;
+
+    return [
+      st.name,
+      st.usn,
+      ...cells,
+      avg + '%'
+    ].join(',');
   });
-  const csv=[headers.join(','),...rows].join('\n');
-  const a=document.createElement('a');
-  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
-  a.download=`quiz_results_${loggedInUser.subject.replace(/ /g,'_')}.csv`;
+
+  const csv = [headers.join(','), ...rows].join('\n');
+
+  const a = document.createElement('a');
+  a.href =
+    'data:text/csv;charset=utf-8,' +
+    encodeURIComponent(csv);
+
+  a.download =
+    `quiz_results_${loggedInUser.subject.replace(/ /g, '_')}.csv`;
+
   a.click();
 }
 
