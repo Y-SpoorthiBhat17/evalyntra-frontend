@@ -206,7 +206,21 @@ async function renderQuizResultsTab(){
     if(!quizzes||!quizzes.length){c.innerHTML=`<div class="empty-message">No quizzes created yet for this subject.</div>`;return;}
 
     // Collect all unique students across all quiz attempts
-    const studentMap={}; // usn -> { name, usn, scores: { quizId: {score,total,pct} } }
+    const stuRes = await fetch(
+  `${BASE}/api/students?college=${encodeURIComponent(loggedInUser.college)}&branch=${encodeURIComponent(loggedInUser.branch)}&year=${encodeURIComponent(loggedInUser.year)}&section=${encodeURIComponent(loggedInUser.section)}`
+);
+
+const allStudents = await stuRes.json();
+
+const studentMap = {};
+
+allStudents.forEach(st => {
+  studentMap[st.usn] = {
+    name: st.name,
+    usn: st.usn,
+    scores: {}
+  };
+}); // usn -> { name, usn, scores: { quizId: {score,total,pct} } }
     quizzes.forEach(q=>{
       (q.attempts||[]).forEach(a=>{
         if(!studentMap[a.studentUSN]){
