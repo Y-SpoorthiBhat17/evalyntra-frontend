@@ -203,14 +203,19 @@ async function renderQuizResultsTab(){
     const res=await fetch(`${BASE}/api/quizzes/${loggedInUser.groupKey}?subject=${encodeURIComponent(loggedInUser.subject)}&uploadedBy=${encodeURIComponent(loggedInUser.name)}`);
     const quizzes=await res.json();
     const c=document.getElementById('quiz-results-content');
-    if(!quizzes||!quizzes.length){c.innerHTML=`<div class="empty-message">No quizzes created yet for this subject.</div>`;return;}
 
-    // Collect all unique students across all quiz attempts
-    const stuRes = await fetch(
+if(!quizzes||!quizzes.length){
+  c.innerHTML=`<div class="empty-message">No quizzes created yet for this subject.</div>`;
+  return;
+}
+
+const stuRes = await fetch(
   `${BASE}/api/students?college=${encodeURIComponent(loggedInUser.college)}&branch=${encodeURIComponent(loggedInUser.branch)}&year=${encodeURIComponent(loggedInUser.year)}&section=${encodeURIComponent(loggedInUser.section)}`
 );
 
 const allStudents = await stuRes.json();
+
+console.log("ALL STUDENTS:", allStudents);
 
 const studentMap = {};
 
@@ -220,7 +225,9 @@ allStudents.forEach(st => {
     usn: st.usn,
     scores: {}
   };
-}); // usn -> { name, usn, scores: { quizId: {score,total,pct} } }
+});
+
+console.log("STUDENT MAP:", studentMap); // usn -> { name, usn, scores: { quizId: {score,total,pct} } }
     quizzes.forEach(q=>{
       (q.attempts||[]).forEach(a=>{
         if(!studentMap[a.studentUSN]){
