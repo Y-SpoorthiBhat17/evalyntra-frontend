@@ -505,7 +505,7 @@ function renderForm(tab){
     <label class="label-text">Due Date & Time</label><input type="datetime-local" id="a-dt" oninput="validate()" class="input-box mb-7">
     <button id="sub-btn" disabled onclick="saveAssignment()" class="btn-submit">📋 Create Assignment</button>`;
   }else if(tab==='quizzes'){
-    form.innerHTML=`<h2 class="text-xl font-bold mb-1">New Quiz</h2><p class="helper-text">Create timed quizzes — manually or with Gemini AI ✨</p>
+    form.innerHTML=`<h2 class="text-xl font-bold mb-1">New Quiz</h2><p class="helper-text">Create timed quizzes — manually or with AI ✨</p>
     <label class="label-text">Quiz Title</label><input type="text" id="q-t" oninput="validate()" class="input-box mb-4">
     <div class="grid grid-cols-2 gap-4 mb-4">
       <div><label class="label-text">Duration (min)</label><input type="number" id="q-tm" min="1" max="180" value="10" class="input-box"></div>
@@ -519,11 +519,11 @@ function renderForm(tab){
     <div id="q-dt-display" style="display:none;font-size:12px;color:#16a34a;font-weight:600;margin-bottom:20px;padding:8px 12px;background:#f0fdf4;border-radius:8px">✓ Due date set</div>
     <div class="rounded-xl p-5 mb-5" style="background:#f5f3ff;border:1px solid #c4b5fd">
       <div class="flex items-center gap-2 mb-1"><span class="text-lg">✨</span><p class="text-sm font-bold" style="color:#5c4ce3">AI Quiz Generator</p></div>
-      <p class="text-xs mb-4" style="color:#8b5cf6">Enter a topic and Gemini AI generates MCQs instantly</p>
+      <p class="text-xs mb-4" style="color:#8b5cf6">Enter a topic and AI generates MCQs instantly</p>
       <label class="label-text">Topic / Subject Area</label>
       <input type="text" id="q-topic" placeholder="e.g. SQL Joins, Ohm's Law, Recursion" class="input-box mb-3">
-      <button onclick="generateAIQuiz()" id="ai-gen-btn" class="w-full py-3 text-white font-semibold rounded-xl text-sm flex items-center justify-center gap-2" style="background:#5c4ce3">✨ Generate Questions with Gemini AI</button>
-      <p class="text-xs text-center mt-2" style="color:#8b5cf6">Powered by Google Gemini</p>
+      <button onclick="generateAIQuiz()" id="ai-gen-btn" class="w-full py-3 text-white font-semibold rounded-xl text-sm flex items-center justify-center gap-2" style="background:#5c4ce3">✨ Generate Questions with AI</button>
+      <p class="text-xs text-center mt-2" style="color:#8b5cf6">Powered by OpenRouter</p>
     </div>
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
       <div style="flex:1;height:1px;background:#e2e8f0"></div>
@@ -559,7 +559,7 @@ async function generateAIQuiz(){
   btn.disabled=true;
   const _manBtn=document.getElementById('sub-btn');
   if(_manBtn){_manBtn.disabled=true;_manBtn.style.opacity='0.35';_manBtn.title='AI generation in progress — reload to use manual mode';}
-  btn.innerHTML=`<svg class="animate-spin w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>Generating with Gemini...`;
+  btn.innerHTML=`<svg class="animate-spin w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>Generating with AI...`;
   let questions=null;
   let errMsg='Unknown error';
   try{
@@ -573,7 +573,7 @@ async function generateAIQuiz(){
     } else { errMsg='AI returned no valid JSON array'; console.log('Raw AI response:',raw.substring(0,300)); }
   }catch(e){console.log('Quiz gen error:',e.message);errMsg=e.message;}
   btn.disabled=false;
-  btn.innerHTML='✨ Generate Questions with Gemini AI';
+  btn.innerHTML='✨ Generate Questions with AI';
   if(!questions||!questions.length){
     alert('AI generation failed: '+errMsg+'\n\nTip: Make sure the server is running (node server.js) and internet is connected.');
     return;
