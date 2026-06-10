@@ -241,8 +241,8 @@ console.log("STUDENT MAP:", studentMap); // usn -> { name, usn, scores: { quizId
 
     const students=Object.values(studentMap).sort((a,b)=>a.name.localeCompare(b.name));
 
-    if(!students.length){
-      c.innerHTML=`<div class="empty-message">No students have attempted any quiz yet.</div>`;return;
+    if(!allStudents.length){
+      c.innerHTML=`<div class="empty-message">No students found in this group yet.</div>`;return;
     }
 
     // Store for CSV export
@@ -334,7 +334,12 @@ const avgPct =
       </tr>`;
     }).join('');
 
-    const totalAttempted=students.filter(st=>Object.keys(st.scores).length>0).length;
+    // Count students who attempted at least one quiz with a real attempt (not auto-assigned 0)
+    const totalAttempted = allStudents.filter(st => {
+      return quizzes.some(q =>
+        (q.attempts || []).some(a => a.studentUSN === st.usn && !a.autoAssigned)
+      );
+    }).length;
 
     c.innerHTML=`
       <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap">
@@ -343,7 +348,7 @@ const avgPct =
           <div style="font-size:11px;color:#94a3b8;font-weight:600;text-transform:uppercase">Quizzes</div>
         </div>
         <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:12px 18px;flex:1;min-width:100px;text-align:center">
-          <div style="font-size:22px;font-weight:800;color:#5c4ce3">${students.length}</div>
+          <div style="font-size:22px;font-weight:800;color:#5c4ce3">${allStudents.length}</div>
           <div style="font-size:11px;color:#94a3b8;font-weight:600;text-transform:uppercase">Students</div>
         </div>
         <div style="background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:12px 18px;flex:1;min-width:100px;text-align:center">
